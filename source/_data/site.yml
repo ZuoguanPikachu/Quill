@@ -1,0 +1,9 @@
+# Quill 站点配置
+# title    站点标题（必填，缺失时用默认值）
+# subtitle 站点副标题（可选，留空或不写都不显示）
+# favicon  站点图标（可选，填写 URL 后在 <head> 输出 <link rel="icon">，如 /favicon.ico 或 https://...）
+# banner   全站页面 Hero Banner 背景图（可选，填写 URL 后首页/归档/分类/标签/友链显示大图横幅；文章页自动用文章自己的 index_img，留空则这些页面不显示横幅）
+title: 坐观の小站
+subtitle: 
+favicon: https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/assets/cat.jpg
+banner: https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/assets/30128e82c7e9a4a5a074889636da7a0a.png

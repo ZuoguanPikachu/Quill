@@ -1,0 +1,25 @@
+# 友链配置 — 构建时读取，生成 /friends/ 页面
+# 每一条的字段：
+#   name   : 站点名（必填）
+#   url    : 站点地址（必填）
+#   avatar : 头像图片地址（可选，不填则显示首字符）
+#   desc   : 一句话简介（可选）
+- name: saber酱的抱枕
+  url: https://saber.love/
+  avatar: https://saber.love/favicon.ico
+  desc: Fly me to the moon
+
+- name: 定の栈
+  url: https://saop.cc/
+  avatar: https://saop.cc/avatar.webp
+  desc: LINK START!
+
+- name: 青稚の空间
+  url: https://blog.linux-qitong.top/
+  avatar: https://blog.linux-qitong.top/img/avatar.webp
+  desc: 越努力，越幸运
+
+- name: Tianli
+  url: https://blog.tianli0.top/
+  avatar: https://q2.qlogo.cn/headimg_dl?dst_uin=507249007&spec=640
+  desc: 自知之明是最可贵的知识！

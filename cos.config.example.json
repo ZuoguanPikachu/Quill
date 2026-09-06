@@ -1,0 +1,13 @@
+// COS 上传配置（复制为 cos.config.json 并填写）
+// cos.config.json 已被 .gitignore 忽略，密钥不会进入版本库
+{
+  "enabled": false,
+  "secretId": "",
+  "secretKey": "",
+  "bucket": "zuoguan-piclib-1257172707",
+  "region": "ap-guangzhou",
+  // key 前缀，如 "blog" 会传成 blog/<slug>/assets/xxx.jpg；留空直接 <slug>/assets/xxx.jpg
+  "prefix": "",
+  // 上传时是否跳过已存在的文件（true 可加速重复构建）
+  "skipExisting": true
+}

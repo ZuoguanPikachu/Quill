@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CE、AOB注入以及一些碎碎念 · 坐观の小站</title>
+<link rel="icon" href="https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/assets/cat.jpg">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/prism.css">
+
+</head>
+<body>
+<header class="site-header">
+  <div class="container site-nav">
+    <a class="site-title" href="/">坐观の小站</a>
+    
+    <button type="button" class="nav-toggle" data-nav-toggle aria-controls="site-menu" aria-expanded="false" aria-label="打开菜单">
+      <svg class="icon-burger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <nav class="site-menu" id="site-menu" aria-label="主菜单"><a class="nav-link" href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>首页</span></a><a class="nav-link" href="/archives/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg><span>归档</span></a><a class="nav-link" href="/categories/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>分类</span></a><a class="nav-link" href="/tags/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span>标签</span></a><a class="nav-link" href="/friends/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>友链</span></a></nav>
+  </div>
+</header>
+<section class="hero">
+  <div class="hero-cover" style="background-image:linear-gradient(rgba(0,0,0,0.12),rgba(0,0,0,0.35)),url(&quot;https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/assets/15.jpg?imageMogr2/thumbnail/1600x900&gt;&quot;)"></div>
+  <div class="hero-inner container">
+    <h1 class="hero-title">CE、AOB注入以及一些碎碎念</h1>
+    
+  </div>
+</section>
+
+<main class="container">
+
+<article class="post page">
+  <header class="post-header">
+    
+    <div class="post-meta">
+      <time datetime="2024-12-30">2024-12-30</time>
+      <span class="sep">·</span> <a class="cat" href="/categories/%E7%BC%96%E7%A8%8B/">编程</a>
+    </div>
+    <div class="post-tags"><a class="tag" href="/tags/%E5%86%85%E5%AD%98%E4%BF%AE%E6%94%B9/">内存修改</a><a class="tag" href="/tags/CSharp/">CSharp</a><a class="tag" href="/tags/%E6%9D%82%E8%B0%88/">杂谈</a></div>
+  </header>
+  <div class="post-content">
+<h2>前言</h2>
+<p>最近又看了CE相关的教学视频<a href="https://www.bilibili.com/video/BV1Eg4y1X7ey/" target="_blank" rel="noopener noreferrer">【从零学游戏逆向】CE入门教程</a>，这次，我觉得我学会了。仔细想想，以往其他的教程在寻找基址时，都是直接说先找“什么写入了内存”，再找“什么读取了内存”，并不会教汇编代码，也不解释为什么这么做。而这个教程有教一些简单的汇编代码，也讲了一些基础的原理。</p>
+<p>于是，我便自己找了个游戏去练手。</p>
+<h2>AOB注入</h2>
+<h3>基本原理</h3>
+<ol>
+<li>搜索注入点的字节码（Array of Bytes，AOB），这个字节码需要是唯一的，用于获得内存地址</li>
+<li>在指定地址写入自定义代码</li>
+</ol>
+<h3>用 C# 实现 AOB 注入功能</h3>
+<h4>案例1</h4>
+<p>原代码：</p>
+<figure class="code-block" data-lang="assembly">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">assembly</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span></div>
+    <pre class="code-scroll"><code class="language-assembly"><span class="line">ac_client.exe+C73EF: FF 08           - dec [eax]</span><span class="line">ac_client.exe+C73F1: 8D 44 24 1C     - lea eax,[esp+1C]</span></code></pre>
+  </div>
+</figure><p>其中<code>dec [eax]</code>就是子弹数减一。</p>
+<p>想实现无限子弹的话，最简单的方法就是将这一行代码用空指令<code>nop</code>填充。所以方法就是搜索<code>FF 08 8D 44 24 1C</code>，获得内存地址（只搜<code>FF 08</code>大概率会有重复的），然后在该地址写入<code>90 90</code>，即两个<code>nop</code>。</p>
+<p>C#实现：</p>
+<ol>
+<li>
+<p>导入 Windows API</p>
+<figure class="code-block" data-lang="c#">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">c#</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span><span class="line-no">4</span><span class="line-no">5</span><span class="line-no">6</span><span class="line-no">7</span><span class="line-no">8</span></div>
+    <pre class="code-scroll"><code class="language-c#"><span class="line"><span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">DllImport</span><span class="token attribute-arguments"><span class="token punctuation">(</span><span class="token string">"kernel32.dll"</span><span class="token punctuation">)</span></span></span><span class="token punctuation">]</span></span><span class="line"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">extern</span> <span class="token return-type class-name">IntPtr</span> <span class="token function">OpenProcess</span><span class="token punctuation">(</span><span class="token class-name"><span class="token keyword">int</span></span> dwDesiredAccess<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">bool</span></span> bInheritHandle<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">int</span></span> dwProcessId<span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="line"> </span><span class="line"><span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">DllImport</span><span class="token attribute-arguments"><span class="token punctuation">(</span><span class="token string">"kernel32.dll"</span><span class="token punctuation">)</span></span></span><span class="token punctuation">]</span></span><span class="line"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">extern</span> <span class="token return-type class-name"><span class="token keyword">bool</span></span> <span class="token function">ReadProcessMemory</span><span class="token punctuation">(</span><span class="token class-name">IntPtr</span> hProcess<span class="token punctuation">,</span> <span class="token class-name">IntPtr</span> lpBaseAddress<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> lpBuffer<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">uint</span></span> nSize<span class="token punctuation">,</span> <span class="token keyword">out</span> <span class="token class-name">IntPtr</span> lpNumberOfBytesRead<span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="line"> </span><span class="line"><span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">DllImport</span><span class="token attribute-arguments"><span class="token punctuation">(</span><span class="token string">"kernel32.dll"</span><span class="token punctuation">)</span></span></span><span class="token punctuation">]</span></span><span class="line"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">extern</span> <span class="token return-type class-name"><span class="token keyword">bool</span></span> <span class="token function">WriteProcessMemory</span><span class="token punctuation">(</span><span class="token class-name">IntPtr</span> hProcess<span class="token punctuation">,</span> <span class="token class-name">IntPtr</span> lpBaseAddress<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> lpBuffer<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">uint</span></span> nSize<span class="token punctuation">,</span> <span class="token keyword">out</span> <span class="token class-name">IntPtr</span> lpNumberOfBytesWritten<span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+  </div>
+</figure></li>
+<li>
+<p>获取进程</p>
+<figure class="code-block" data-lang="c#">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">c#</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span><span class="line-no">4</span><span class="line-no">5</span></div>
+    <pre class="code-scroll"><code class="language-c#"><span class="line"><span class="token keyword">const</span> <span class="token class-name"><span class="token keyword">int</span></span> PROCESS_ALL_ACCESS <span class="token operator">=</span> <span class="token number">0x1F0FFF</span><span class="token punctuation">;</span></span><span class="line"> </span><span class="line"><span class="token class-name"><span class="token keyword">string</span></span> processName <span class="token operator">=</span> <span class="token string">"ac_client"</span><span class="token punctuation">;</span></span><span class="line"><span class="token class-name">Process</span> process <span class="token operator">=</span> Process<span class="token punctuation">.</span><span class="token function">GetProcessesByName</span><span class="token punctuation">(</span>processName<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span></span><span class="line"><span class="token class-name">IntPtr</span> hProcess <span class="token operator">=</span> <span class="token function">OpenProcess</span><span class="token punctuation">(</span>PROCESS_ALL_ACCESS<span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> process<span class="token punctuation">.</span>Id<span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+  </div>
+</figure></li>
+<li>
+<p>搜索字节码</p>
+<figure class="code-block" data-lang="c#">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">c#</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span><span class="line-no">4</span><span class="line-no">5</span><span class="line-no">6</span><span class="line-no">7</span><span class="line-no">8</span><span class="line-no">9</span><span class="line-no">10</span><span class="line-no">11</span><span class="line-no">12</span><span class="line-no">13</span><span class="line-no">14</span><span class="line-no">15</span><span class="line-no">16</span><span class="line-no">17</span><span class="line-no">18</span><span class="line-no">19</span><span class="line-no">20</span><span class="line-no">21</span><span class="line-no">22</span><span class="line-no">23</span><span class="line-no">24</span><span class="line-no">25</span><span class="line-no">26</span><span class="line-no">27</span><span class="line-no">28</span><span class="line-no">29</span><span class="line-no">30</span><span class="line-no">31</span><span class="line-no">32</span><span class="line-no">33</span></div>
+    <pre class="code-scroll"><code class="language-c#"><span class="line"><span class="token return-type class-name">IntPtr</span> <span class="token function">FindPattern</span><span class="token punctuation">(</span><span class="token class-name">IntPtr</span> hProcess<span class="token punctuation">,</span> <span class="token class-name">Process</span> process<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> pattern<span class="token punctuation">)</span></span><span class="line"><span class="token punctuation">{</span></span><span class="line">    <span class="token keyword">foreach</span> <span class="token punctuation">(</span><span class="token class-name">ProcessModule</span> module <span class="token keyword">in</span> process<span class="token punctuation">.</span>Modules<span class="token punctuation">)</span></span><span class="line">    <span class="token punctuation">{</span></span><span class="line">        <span class="token class-name">IntPtr</span> baseAddress <span class="token operator">=</span> module<span class="token punctuation">.</span>BaseAddress<span class="token punctuation">;</span></span><span class="line">        <span class="token class-name"><span class="token keyword">int</span></span> moduleSize <span class="token operator">=</span> module<span class="token punctuation">.</span>ModuleMemorySize<span class="token punctuation">;</span></span><span class="line">        <span class="token class-name"><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> buffer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token constructor-invocation class-name"><span class="token keyword">byte</span></span><span class="token punctuation">[</span>moduleSize<span class="token punctuation">]</span><span class="token punctuation">;</span></span><span class="line"> </span><span class="line">        <span class="token function">ReadProcessMemory</span><span class="token punctuation">(</span>hProcess<span class="token punctuation">,</span> baseAddress<span class="token punctuation">,</span> buffer<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">uint</span><span class="token punctuation">)</span>moduleSize<span class="token punctuation">,</span> <span class="token keyword">out</span> _<span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="line">        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name"><span class="token keyword">int</span></span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> buffer<span class="token punctuation">.</span>Length <span class="token operator">-</span> pattern<span class="token punctuation">.</span>Length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span></span><span class="line">        <span class="token punctuation">{</span></span><span class="line">            <span class="token class-name"><span class="token keyword">bool</span></span> found <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span></span><span class="line">            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name"><span class="token keyword">int</span></span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> pattern<span class="token punctuation">.</span>Length<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span></span><span class="line">            <span class="token punctuation">{</span></span><span class="line">                <span class="token keyword">if</span> <span class="token punctuation">(</span>buffer<span class="token punctuation">[</span>i <span class="token operator">+</span> j<span class="token punctuation">]</span> <span class="token operator">!=</span> pattern<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">)</span></span><span class="line">                <span class="token punctuation">{</span></span><span class="line">                    found <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span></span><span class="line">                    <span class="token keyword">break</span><span class="token punctuation">;</span></span><span class="line">                <span class="token punctuation">}</span></span><span class="line">            <span class="token punctuation">}</span></span><span class="line"> </span><span class="line">            <span class="token keyword">if</span> <span class="token punctuation">(</span>found<span class="token punctuation">)</span></span><span class="line">            <span class="token punctuation">{</span></span><span class="line">                <span class="token keyword">return</span> baseAddress <span class="token operator">+</span> i<span class="token punctuation">;</span></span><span class="line">            <span class="token punctuation">}</span></span><span class="line">        <span class="token punctuation">}</span></span><span class="line">    <span class="token punctuation">}</span></span><span class="line"> </span><span class="line">    <span class="token keyword">return</span> IntPtr<span class="token punctuation">.</span>Zero<span class="token punctuation">;</span></span><span class="line"><span class="token punctuation">}</span></span><span class="line"> </span><span class="line"><span class="token class-name"><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> pattern <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">0xFF</span><span class="token punctuation">,</span> <span class="token number">0x08</span><span class="token punctuation">,</span> <span class="token number">0x8D</span><span class="token punctuation">,</span> <span class="token number">0x44</span><span class="token punctuation">,</span> <span class="token number">0x24</span><span class="token punctuation">,</span> <span class="token number">0x1C</span><span class="token punctuation">]</span><span class="token punctuation">;</span></span><span class="line"><span class="token class-name">IntPtr</span> targetAddress <span class="token operator">=</span> <span class="token function">FindPattern</span><span class="token punctuation">(</span>hProcess<span class="token punctuation">,</span> process<span class="token punctuation">,</span> pattern<span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+  </div>
+</figure></li>
+<li>
+<p>注入</p>
+<figure class="code-block" data-lang="c#">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">c#</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span></div>
+    <pre class="code-scroll"><code class="language-c#"><span class="line"><span class="token class-name"><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> injectCode <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">0x90</span><span class="token punctuation">,</span> <span class="token number">0x90</span><span class="token punctuation">]</span><span class="token punctuation">;</span></span><span class="line"><span class="token function">WriteProcessMemory</span><span class="token punctuation">(</span>hProcess<span class="token punctuation">,</span> targetAddress<span class="token punctuation">,</span> injectCode<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">uint</span><span class="token punctuation">)</span>injectCode<span class="token punctuation">.</span>Length<span class="token punctuation">,</span> <span class="token keyword">out</span> _<span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+  </div>
+</figure></li>
+<li>
+<p>取消注入</p>
+<figure class="code-block" data-lang="c#">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">c#</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span></div>
+    <pre class="code-scroll"><code class="language-c#"><span class="line"><span class="token function">WriteProcessMemory</span><span class="token punctuation">(</span>hProcess<span class="token punctuation">,</span> targetAddress<span class="token punctuation">,</span> pattern<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">uint</span><span class="token punctuation">)</span>pattern<span class="token punctuation">.</span>Length<span class="token punctuation">,</span> <span class="token keyword">out</span> _<span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+  </div>
+</figure></li>
+</ol>
+<h4>案例二</h4>
+<p>这个就是我拿来练手的游戏。原代码：</p>
+<figure class="code-block" data-lang="assembly">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">assembly</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span><span class="line-no">4</span><span class="line-no">5</span></div>
+    <pre class="code-scroll"><code class="language-assembly"><span class="line">PlagueExternal.SetEvoPoints+6:  8B 45 0C           - mov eax,[ebp+0C]</span><span class="line">PlagueExternal.SetEvoPoints+9:  8B C8              - mov ecx,eax</span><span class="line">PlagueExternal.SetEvoPoints+B:  2B 4A 04           - sub ecx,[edx+04]</span><span class="line">PlagueExternal.SetEvoPoints+E:  01 8A C4 01 00 00  - add [edx+000001C4],ecx</span><span class="line">PlagueExternal.SetEvoPoints+14: 89 42 04           - mov [edx+04],eax</span></code></pre>
+  </div>
+</figure><p><code>[ebp+0C]</code>是将要改变成的DNA数量，然后赋值给了<code>eax</code>、<code>ecx</code>。<code>[edx+04]</code>和<code>[edx+000001C4]</code>，都是当前的DNA数量（两者的异同没研究明白）。<code>ecx</code>与<code>[edx+04]</code>相减，得到变化值，然后加到<code>[edx+000001C4]</code>上；将<code>eax</code>赋值给<code>[edx+04]</code>。这样就完成了DNA数量的变化。</p>
+<p>找不到DNA数量的基址，那就“曲线救国”，让进化的时候不消耗DNA。在<code>mov ecx,eax</code>处进行注入，比较<code>eax</code>和<code>[edx+04]</code>的大小，如果<code>eax</code>更大，就走正常流程，否则就将<code>eax</code>赋值为<code>[edx+04]</code>，然后走正常流程。这样就能实现DNA数量的只增不减。</p>
+<p>显然，只在原处修改代码是无法实现的，需要新申请一块内存空间，在其中写入相关代码，在注入处跳转至新内存空间，再跳转回来。</p>
+<p><img src="https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/CE%E3%80%81AOB%E6%B3%A8%E5%85%A5%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%BA%9B%E7%A2%8E%E7%A2%8E%E5%BF%B5/image-20241230145247717.png" alt="注入代码，跳转至新内存空间"></p>
+<p><img src="https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/CE%E3%80%81AOB%E6%B3%A8%E5%85%A5%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%BA%9B%E7%A2%8E%E7%A2%8E%E5%BF%B5/image-20241230150016568.png" alt="新内存空间内的代码"></p>
+<p>C#实现：</p>
+<ol>
+<li>
+<p>导入 Windows API</p>
+<figure class="code-block" data-lang="c#">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">c#</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span><span class="line-no">4</span><span class="line-no">5</span><span class="line-no">6</span><span class="line-no">7</span><span class="line-no">8</span><span class="line-no">9</span><span class="line-no">10</span><span class="line-no">11</span><span class="line-no">12</span><span class="line-no">13</span><span class="line-no">14</span><span class="line-no">15</span><span class="line-no">16</span></div>
+    <pre class="code-scroll"><code class="language-c#"><span class="line"><span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">DllImport</span><span class="token attribute-arguments"><span class="token punctuation">(</span><span class="token string">"kernel32.dll"</span><span class="token punctuation">)</span></span></span><span class="token punctuation">]</span></span><span class="line"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">extern</span> <span class="token return-type class-name">IntPtr</span> <span class="token function">OpenProcess</span><span class="token punctuation">(</span><span class="token class-name"><span class="token keyword">int</span></span> dwDesiredAccess<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">bool</span></span> bInheritHandle<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">int</span></span> dwProcessId<span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="line"> </span><span class="line"><span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">DllImport</span><span class="token attribute-arguments"><span class="token punctuation">(</span><span class="token string">"kernel32.dll"</span><span class="token punctuation">)</span></span></span><span class="token punctuation">]</span></span><span class="line"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">extern</span> <span class="token return-type class-name"><span class="token keyword">bool</span></span> <span class="token function">ReadProcessMemory</span><span class="token punctuation">(</span><span class="token class-name">IntPtr</span> hProcess<span class="token punctuation">,</span> <span class="token class-name">IntPtr</span> lpBaseAddress<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> lpBuffer<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">uint</span></span> nSize<span class="token punctuation">,</span> <span class="token keyword">out</span> <span class="token class-name">IntPtr</span> lpNumberOfBytesRead<span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="line"> </span><span class="line"><span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">DllImport</span><span class="token attribute-arguments"><span class="token punctuation">(</span><span class="token string">"kernel32.dll"</span><span class="token punctuation">)</span></span></span><span class="token punctuation">]</span></span><span class="line"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">extern</span> <span class="token return-type class-name"><span class="token keyword">bool</span></span> <span class="token function">WriteProcessMemory</span><span class="token punctuation">(</span><span class="token class-name">IntPtr</span> hProcess<span class="token punctuation">,</span> <span class="token class-name">IntPtr</span> lpBaseAddress<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> lpBuffer<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">uint</span></span> nSize<span class="token punctuation">,</span> <span class="token keyword">out</span> <span class="token class-name">IntPtr</span> lpNumberOfBytesWritten<span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="line"> </span><span class="line"><span class="token comment">// 申请内存</span></span><span class="line"><span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">DllImport</span><span class="token attribute-arguments"><span class="token punctuation">(</span><span class="token string">"kernel32.dll"</span><span class="token punctuation">)</span></span></span><span class="token punctuation">]</span></span><span class="line"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">extern</span> <span class="token return-type class-name">IntPtr</span> <span class="token function">VirtualAllocEx</span><span class="token punctuation">(</span><span class="token class-name">IntPtr</span> hProcess<span class="token punctuation">,</span> <span class="token class-name">IntPtr</span> lpAddress<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">uint</span></span> dwSize<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">uint</span></span> flAllocationType<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">uint</span></span> flProtect<span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="line"> </span><span class="line"><span class="token comment">// 释放内存</span></span><span class="line"><span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">DllImport</span><span class="token attribute-arguments"><span class="token punctuation">(</span><span class="token string">"kernel32.dll"</span><span class="token punctuation">,</span> SetLastError <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">)</span></span></span><span class="token punctuation">]</span></span><span class="line"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">extern</span> <span class="token return-type class-name"><span class="token keyword">bool</span></span> <span class="token function">VirtualFreeEx</span><span class="token punctuation">(</span><span class="token class-name">IntPtr</span> hProcess<span class="token punctuation">,</span> <span class="token class-name">IntPtr</span> lpAddress<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">uint</span></span> dwSize<span class="token punctuation">,</span> <span class="token class-name"><span class="token keyword">uint</span></span> dwFreeType<span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+  </div>
+</figure></li>
+<li>
+<p>获取进程</p>
+</li>
+<li>
+<p>搜索字节码</p>
+</li>
+<li>
+<p>注入</p>
+<ul>
+<li>
+<p>申请内存</p>
+<figure class="code-block" data-lang="c#">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">c#</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span></div>
+    <pre class="code-scroll"><code class="language-c#"><span class="line"><span class="token keyword">const</span> <span class="token class-name"><span class="token keyword">uint</span></span> PAGE_EXECUTE_READWRITE <span class="token operator">=</span> <span class="token number">0x40</span><span class="token punctuation">;</span></span><span class="line"><span class="token class-name">IntPtr</span> memAddress <span class="token operator">=</span> <span class="token function">VirtualAllocEx</span><span class="token punctuation">(</span>hProcess<span class="token punctuation">,</span> IntPtr<span class="token punctuation">.</span>Zero<span class="token punctuation">,</span> <span class="token number">0x1000</span><span class="token punctuation">,</span> <span class="token number">4096</span><span class="token punctuation">,</span> PAGE_EXECUTE_READWRITE<span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+  </div>
+</figure></li>
+<li>
+<p>跳转至新内存空间</p>
+<figure class="code-block" data-lang="c#">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">c#</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span><span class="line-no">4</span><span class="line-no">5</span><span class="line-no">6</span><span class="line-no">7</span></div>
+    <pre class="code-scroll"><code class="language-c#"><span class="line"><span class="token class-name"><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> jumpToNewMemCode <span class="token operator">=</span> <span class="token punctuation">[</span></span><span class="line">    <span class="token number">0xE9</span><span class="token punctuation">,</span> <span class="token number">0x00</span><span class="token punctuation">,</span> <span class="token number">0x00</span><span class="token punctuation">,</span> <span class="token number">0x00</span><span class="token punctuation">,</span> <span class="token number">0x00</span><span class="token punctuation">,</span> <span class="token comment">// jmp xxx</span></span><span class="line"><span class="token punctuation">]</span><span class="token punctuation">;</span></span><span class="line"><span class="token comment">// jmp 相对地址</span></span><span class="line"><span class="token class-name">IntPtr</span> relativeAddress <span class="token operator">=</span> memAddress <span class="token operator">-</span> <span class="token punctuation">(</span>targetAddress <span class="token operator">+</span> <span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="line">BitConverter<span class="token punctuation">.</span><span class="token function">GetBytes</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span>relativeAddress<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">CopyTo</span><span class="token punctuation">(</span>jumpToNewMemCode<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="line"><span class="token function">WriteProcessMemory</span><span class="token punctuation">(</span>hProcess<span class="token punctuation">,</span> targetAddress<span class="token punctuation">,</span> jumpToNewMemCode<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">uint</span><span class="token punctuation">)</span>jumpToNewMemCode<span class="token punctuation">.</span>Length<span class="token punctuation">,</span> <span class="token keyword">out</span> _<span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+  </div>
+</figure></li>
+<li>
+<p>新内存空间代码</p>
+<figure class="code-block" data-lang="c#">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">c#</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span><span class="line-no">4</span><span class="line-no">5</span><span class="line-no">6</span><span class="line-no">7</span><span class="line-no">8</span><span class="line-no">9</span><span class="line-no">10</span><span class="line-no">11</span><span class="line-no">12</span><span class="line-no">13</span><span class="line-no">14</span><span class="line-no">15</span><span class="line-no">16</span><span class="line-no">17</span><span class="line-no">18</span></div>
+    <pre class="code-scroll"><code class="language-c#"><span class="line"><span class="token class-name"><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> injectCode <span class="token operator">=</span> <span class="token punctuation">[</span></span><span class="line">    <span class="token number">0x3B</span><span class="token punctuation">,</span> <span class="token number">0x42</span><span class="token punctuation">,</span> <span class="token number">0x04</span><span class="token punctuation">,</span> <span class="token comment">// cmp eax,[edx+04]</span></span><span class="line">    <span class="token number">0x0F</span><span class="token punctuation">,</span> <span class="token number">0x8F</span><span class="token punctuation">,</span> <span class="token number">0x00</span><span class="token punctuation">,</span> <span class="token number">0x00</span><span class="token punctuation">,</span> <span class="token number">0x00</span><span class="token punctuation">,</span> <span class="token number">0x00</span><span class="token punctuation">,</span> <span class="token comment">// jg xxx</span></span><span class="line">    <span class="token number">0x8B</span><span class="token punctuation">,</span> <span class="token number">0x42</span><span class="token punctuation">,</span> <span class="token number">0x04</span><span class="token punctuation">,</span> <span class="token comment">// mov eax,[edx+04]</span></span><span class="line">    <span class="token number">0x8B</span><span class="token punctuation">,</span> <span class="token number">0xC8</span><span class="token punctuation">,</span> <span class="token comment">// mov ecx,eax</span></span><span class="line">    <span class="token number">0x2B</span><span class="token punctuation">,</span> <span class="token number">0x4A</span><span class="token punctuation">,</span> <span class="token number">0x04</span><span class="token punctuation">,</span> <span class="token comment">// sub ecx,[edx+04]</span></span><span class="line">    <span class="token number">0xE9</span><span class="token punctuation">,</span> <span class="token number">0x00</span><span class="token punctuation">,</span> <span class="token number">0x00</span><span class="token punctuation">,</span> <span class="token number">0x00</span><span class="token punctuation">,</span> <span class="token number">0x00</span><span class="token punctuation">,</span> <span class="token comment">// jmp xxx</span></span><span class="line"><span class="token punctuation">]</span><span class="token punctuation">;</span></span><span class="line"><span class="token comment">// jg 相对地址</span></span><span class="line"><span class="token comment">// relativeAddress = (memAddress + 12) - (memAddress + 9);</span></span><span class="line"><span class="token comment">// relativeAddress = 3</span></span><span class="line">BitConverter<span class="token punctuation">.</span><span class="token function">GetBytes</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">CopyTo</span><span class="token punctuation">(</span>injectCode<span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="line"> </span><span class="line"><span class="token comment">// jmp 相对地址</span></span><span class="line">relativeAddress <span class="token operator">=</span> <span class="token punctuation">(</span>targetAddress <span class="token operator">+</span> jumpToNewMemCode<span class="token punctuation">.</span>Length<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token punctuation">(</span>memAddress <span class="token operator">+</span> injectCode<span class="token punctuation">.</span>Length<span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="line">BitConverter<span class="token punctuation">.</span><span class="token function">GetBytes</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span>relativeAddress<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">CopyTo</span><span class="token punctuation">(</span>injectCode<span class="token punctuation">,</span> injectCode<span class="token punctuation">.</span>Length <span class="token operator">-</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 填充 jmp 地址</span></span><span class="line"> </span><span class="line"><span class="token function">WriteProcessMemory</span><span class="token punctuation">(</span>hProcess<span class="token punctuation">,</span> memAddress<span class="token punctuation">,</span> injectCode<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">uint</span><span class="token punctuation">)</span>injectCode<span class="token punctuation">.</span>Length<span class="token punctuation">,</span> <span class="token keyword">out</span> _<span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+  </div>
+</figure></li>
+</ul>
+<p>跳转相对地址的计算方法：目标地址 - 跳转指令（含相对地址）末尾的地址</p>
+</li>
+<li>
+<p>取消注入</p>
+<figure class="code-block" data-lang="c#">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">c#</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span><span class="line-no">4</span></div>
+    <pre class="code-scroll"><code class="language-c#"><span class="line"><span class="token function">WriteProcessMemory</span><span class="token punctuation">(</span>hProcess<span class="token punctuation">,</span> targetAddress<span class="token punctuation">,</span> pattern<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">uint</span><span class="token punctuation">)</span>pattern<span class="token punctuation">.</span>Length<span class="token punctuation">,</span> <span class="token keyword">out</span> _<span class="token punctuation">)</span><span class="token punctuation">;</span></span><span class="line"> </span><span class="line"><span class="token keyword">const</span> <span class="token class-name"><span class="token keyword">uint</span></span> MEM_RELEASE <span class="token operator">=</span> <span class="token number">0x8000</span><span class="token punctuation">;</span></span><span class="line"><span class="token function">VirtualFreeEx</span><span class="token punctuation">(</span>hProcess<span class="token punctuation">,</span> memAddress<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> MEM_RELEASE<span class="token punctuation">)</span></span></code></pre>
+  </div>
+</figure></li>
+</ol>
+<h3>将汇编转换为16进制机器码</h3>
+<p>以上的16进制机器码，都是我从CE中抄来的。粗略地搜索了一下，C#中似乎并没有一个完善的库来实现这个功能，容我细细研究一下。</p>
+<h2>一些碎碎念</h2>
+<p>从我萌生了做游戏外挂的想法到今天，至少8年了。然而非常可惜，直到今天，我也才能、只能在这种不设防的、简单的单机游戏，完成一些简单的作弊。不过作为一个非专业人员，只是一个爱好者，可能也足够了？</p>
+<p>回想一下，在“作弊”这一领域，我确实点了不少技能。</p>
+<p>我个人觉得，我最强的领域大概就是爬虫了。不过这也只是对于我个人而言，在高手眼里，我可能很菜很菜。爬虫技术是真正帮我解决过大问题的。本科毕业有创分要求，对于一个不爱参加社团的社恐死宅来说，最好的获取创分的方法就是参加各种讲座。而讲座一般都分为预报名和现场报名。现场报名正式开始前的1~2小时就会有人开始排队，非常浪费时间，而且可能跟上课冲突。而预报名则是填问卷星，拼手速。人手速再快也不过程序啊。从我开始用爬虫抢预报名后，未尝一败。我应该有一半的创分都是这么来的。</p>
+<p>有神经网络的加持，模拟领域也不错。学会训练、使用Yolo v5后，做过一个微信跳一跳的脚本，效果很不错。可惜的是，那时跳一跳已经不火了。还试过用图片分类网络判断原神里钓鱼的状态，从而实现半自动钓鱼。做的部落冲突辅助，也有一点深度神经网络在内。</p>
+<p>内存修改领域，今天才算是入了门。</p>
+<p>高三时，化学老师和我们说过，一些知识点，如果怎么搞都搞不懂，那就把它放一边，等你有了更丰富的知识储备后，再回来看，你会发现其实很简单。我还是挺认可这个说法的。一开始学爬虫的时候，真的是啥也不懂，也不明白教程里为什么那样做。而某一天，就像是突然开悟了一样，明白了教程里在讲什么、在做什么、为什么……以前学用CE找基址的时候，也是不明白为什么要那样做。现在，是慢慢理解了，还能看懂一些简单的汇编代码了。想来还是有点点感慨的。</p>
+
+  </div>
+</article>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <p>Powered by <strong>Quill</strong></p>
+  </div>
+</footer>
+<script src="/main.js" defer></script>
+</body>
+</html>

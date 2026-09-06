@@ -1,0 +1,5 @@
+node_modules/
+.npm-cache/
+cos.config.json
+.shot-profile/
+source/posts/*/assets/

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>不专业，但主观！几种安卓开发框架的使用感受 · 坐观の小站</title>
+<link rel="icon" href="https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/assets/cat.jpg">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/prism.css">
+
+</head>
+<body>
+<header class="site-header">
+  <div class="container site-nav">
+    <a class="site-title" href="/">坐观の小站</a>
+    
+    <button type="button" class="nav-toggle" data-nav-toggle aria-controls="site-menu" aria-expanded="false" aria-label="打开菜单">
+      <svg class="icon-burger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <nav class="site-menu" id="site-menu" aria-label="主菜单"><a class="nav-link" href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>首页</span></a><a class="nav-link" href="/archives/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg><span>归档</span></a><a class="nav-link" href="/categories/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>分类</span></a><a class="nav-link" href="/tags/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span>标签</span></a><a class="nav-link" href="/friends/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>友链</span></a></nav>
+  </div>
+</header>
+<section class="hero">
+  <div class="hero-cover" style="background-image:linear-gradient(rgba(0,0,0,0.12),rgba(0,0,0,0.35)),url(&quot;https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/assets/20.jpg?imageMogr2/thumbnail/1600x900&gt;&quot;)"></div>
+  <div class="hero-inner container">
+    <h1 class="hero-title">不专业，但主观！几种安卓开发框架的使用感受</h1>
+    
+  </div>
+</section>
+
+<main class="container">
+
+<article class="post page">
+  <header class="post-header">
+    
+    <div class="post-meta">
+      <time datetime="2025-03-26">2025-03-26</time>
+      <span class="sep">·</span> <a class="cat" href="/categories/%E5%85%B6%E4%BB%96/">其他</a>
+    </div>
+    <div class="post-tags"><a class="tag" href="/tags/%E6%9D%82%E8%B0%88/">杂谈</a></div>
+  </header>
+  <div class="post-content">
+<p>从萌生开发安卓APP的想法到现在，一晃过去了好几年。期间，我尝试过各种开发框架，也陆陆续续开发了一些应用。最近，用<code>Flutter</code>开发了<a href="https://github.com/ZuoguanPikachu/BiliMusic" target="_blank" rel="noopener noreferrer"><code>BiliMusic</code></a>，以<code>BiliBili</code>为音频源的音乐播放器。<code>Flutter</code>是我接触的第一个框架，兜兜转转，最终又回到了它的怀抱，有点感慨，所以想写一篇博客，分享一下自己的这几年上手过的开发框架的使用感受。</p>
+<h2>Flutter</h2>
+<p>我自己也不知道为什么，对<code>Java</code>非常抗拒，所以没有选择原生开发，而是机缘巧合下了解到的<code>Flutter</code>。</p>
+<p><code>Flutter</code>最大的一个痛点在于 Widget 嵌套的复杂性。它要求开发者通过层层嵌套<code>Widget</code>来构建界面。对于复杂的布局，代码嵌套可能会变得非常深，可读性和维护性都大打折扣。不过，通过抽取组件复用、结合状态管理库，这个问题可以得到一定程度的缓解。</p>
+<p><code>Flutter</code>的异步处理是它的亮点之一，但对于新手来说，却是个不小的挑战。在没有AI辅助的日子里，我花了半天时间才搞明白<code>FutureBuilder</code>和<code>StreamBuilder</code>的用法和适用场景。这成功地把我劝退了。</p>
+<p>大约一年前，我发现了<a href="https://github.com/guozhigq/pilipala" target="_blank" rel="noopener noreferrer"><code>PiliPala</code></a>这个应用，得知它是用<code>Flutter</code>开发的后，我对这个框架重新燃起了兴趣。</p>
+<p>有了AI的帮助，我很快完成了<code>BiliMusic</code>的 Demo。这次的开发体验好了很多，快速搭建一个 Demo 不再是难事。<code>GetX</code>状态管理库用起来特别顺手，极大提升了开发效率。开发过程比较依赖第三方库，不过<code>Pub</code>包管理生态里的库数量丰富。当然，偶尔也会遇到库版本不兼容的问题。</p>
+<h2>UniApp</h2>
+<p><code>uni-app</code>是我最早接触的跨平台开发框架，但一直没能真正上手。主要原因是，我想开发的应用大多依赖爬虫功能，而前端跨域问题始终是个绕不过去的坎。此外，要实现一些原生功能也显得颇为棘手。不过，凭借<code>HTML</code>和<code>CSS</code>的强大表现力，<code>uni-app</code>确实能打造出 UI 相当精美的应用。</p>
+<h2>Xamarin / MAUI</h2>
+<p><code>Xamarin / MAUI</code>是我用得最多的框架了。</p>
+<p>在大二的暑假，学校安排了见习，但是实验室的老师并不是很上心，对我们是放养状态。于是，我趁机自学了<code>Xamarin</code>。恰好那时，我萌生了一个想法：开发一款集课表查询、考试查询和图书馆预约功能于一体的校园助手。因为学校官网的体验实在太差，前辈开发的微信公众号也槽点颇多。跟着<a href="https://space.bilibili.com/15135791" target="_blank" rel="noopener noreferrer">东北大学张引</a>老师的课程，我学习了<code>MVVM</code>模式，写出了相对优雅的代码，后续维护也轻松了不少。</p>
+<p>没多久，<code>MAUI</code>就发布了。正巧，学校的图书馆预约系统也迎来了改版。于是，我顺势将图书馆预约功能独立出来，用<code>MAUI</code>重写了一版。</p>
+<p><code>MAUI</code>的开发效率很高，对新人颇为友好。<a href="https://space.bilibili.com/15135791" target="_blank" rel="noopener noreferrer">东北大学张引</a>老师的课程作为入门指引，新手也不容易写出糟糕的代码。<code>MAUI</code>的<code>MVVM</code>，初次接触时让人觉得很高级，代码优雅且结构清晰。后面接触了<code>Vue</code>、<code>Flutter</code>的<code>GetX</code>，我开始觉得<code>MAUI</code>的<code>MVVM</code>有点繁琐。<code>MAUI</code>的可自定义程度较低，想要高度定制化，就不得不深入原生开发。<code>Nuget</code>包管理工具使用体验很不错，相较于<code>Flutter</code>使用<code>pubspec.yaml</code>依赖管理方式，更合我心意。</p>
+<h2>Jetpack Compose</h2>
+<p>与<code>Flutter</code>一样，采用了声明式UI。不过我当时没有精力去学<code>Kotlin</code>，用起来不是很顺手。费了九牛二虎之力，才通过<code>Hilt</code>实现了<code>MVVM</code>模式。那时候，<code>Material 3</code>似乎还在测试阶段，写代码时需要在前面加上类似<code>@ExperimentalMaterial3Api</code>的注解——具体记不清了，总之是用来标记这些功能尚属实验性质。最终，代码写得不够优雅，我便放弃了继续探索。</p>
+
+  </div>
+</article>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <p>Powered by <strong>Quill</strong></p>
+  </div>
+</footer>
+<script src="/main.js" defer></script>
+</body>
+</html>

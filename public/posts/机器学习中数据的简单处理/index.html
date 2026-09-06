@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>机器学习中数据的简单处理 · 坐观の小站</title>
+<link rel="icon" href="https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/assets/cat.jpg">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/prism.css">
+
+</head>
+<body>
+<header class="site-header">
+  <div class="container site-nav">
+    <a class="site-title" href="/">坐观の小站</a>
+    
+    <button type="button" class="nav-toggle" data-nav-toggle aria-controls="site-menu" aria-expanded="false" aria-label="打开菜单">
+      <svg class="icon-burger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <nav class="site-menu" id="site-menu" aria-label="主菜单"><a class="nav-link" href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>首页</span></a><a class="nav-link" href="/archives/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg><span>归档</span></a><a class="nav-link" href="/categories/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>分类</span></a><a class="nav-link" href="/tags/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span>标签</span></a><a class="nav-link" href="/friends/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>友链</span></a></nav>
+  </div>
+</header>
+<section class="hero">
+  <div class="hero-cover" style="background-image:linear-gradient(rgba(0,0,0,0.12),rgba(0,0,0,0.35)),url(&quot;https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/assets/3.jpg?imageMogr2/thumbnail/1600x900&gt;&quot;)"></div>
+  <div class="hero-inner container">
+    <h1 class="hero-title">机器学习中数据的简单处理</h1>
+    
+  </div>
+</section>
+
+<main class="container">
+
+<article class="post page">
+  <header class="post-header">
+    
+    <div class="post-meta">
+      <time datetime="2023-04-13">2023-04-13</time>
+      <span class="sep">·</span> <a class="cat" href="/categories/%E7%BC%96%E7%A8%8B/">编程</a>
+    </div>
+    <div class="post-tags"><a class="tag" href="/tags/%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/">数据处理</a><a class="tag" href="/tags/Python/">Python</a></div>
+  </header>
+  <div class="post-content">
+<p><code>Kaggle</code>机器学习比赛的数据集中会有一些缺失值和一些离散值，分享一下使用pandas快速处理的方法。</p>
+<p>首先将训练集和测试集合并（在后续步骤中训练集与测试集一起算均值、方差，属于比赛中的小技巧）</p>
+<figure class="code-block" data-lang="python">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">python</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span></div>
+    <pre class="code-scroll"><code class="language-python"><span class="line">train <span class="token operator">=</span> pandas<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span><span class="token string">"train.csv"</span><span class="token punctuation">)</span></span><span class="line">test <span class="token operator">=</span> pandas<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span><span class="token string">"test.csv"</span><span class="token punctuation">)</span></span><span class="line">all_features <span class="token operator">=</span> pandas<span class="token punctuation">.</span>concat<span class="token punctuation">(</span><span class="token punctuation">(</span>train<span class="token punctuation">.</span>iloc<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> test<span class="token punctuation">.</span>iloc<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span></span></code></pre>
+  </div>
+</figure><p>将数值型特征重新缩放到零均值和单位方差来标准化数据，缺失值替换为0，即均值</p>
+<figure class="code-block" data-lang="python">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">python</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span><span class="line-no">4</span><span class="line-no">5</span></div>
+    <pre class="code-scroll"><code class="language-python"><span class="line">numeric_features <span class="token operator">=</span> all_features<span class="token punctuation">.</span>dtypes<span class="token punctuation">[</span>all_features<span class="token punctuation">.</span>dtypes <span class="token operator">!=</span> <span class="token string">"object"</span><span class="token punctuation">]</span><span class="token punctuation">.</span>index</span><span class="line">all_features<span class="token punctuation">[</span>numeric_features<span class="token punctuation">]</span> <span class="token operator">=</span> all_features<span class="token punctuation">[</span>numeric_features<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">apply</span><span class="token punctuation">(</span></span><span class="line">    <span class="token keyword">lambda</span> x<span class="token punctuation">:</span> <span class="token punctuation">(</span>x <span class="token operator">-</span> x<span class="token punctuation">.</span>mean<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">/</span> x<span class="token punctuation">.</span>std<span class="token punctuation">(</span><span class="token punctuation">)</span></span><span class="line"><span class="token punctuation">)</span></span><span class="line">all_features<span class="token punctuation">[</span>numeric_features<span class="token punctuation">]</span> <span class="token operator">=</span> all_features<span class="token punctuation">[</span>numeric_features<span class="token punctuation">]</span><span class="token punctuation">.</span>fillna<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span></span></code></pre>
+  </div>
+</figure><p>对离散数值采用one-hot编码处理</p>
+<figure class="code-block" data-lang="python">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">python</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span></div>
+    <pre class="code-scroll"><code class="language-python"><span class="line">all_features <span class="token operator">=</span> pandas<span class="token punctuation">.</span>get_dummies<span class="token punctuation">(</span>all_features<span class="token punctuation">,</span> dummy_na<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span></span></code></pre>
+  </div>
+</figure><p>处理完后，再重新分为训练集和测试集</p>
+<figure class="code-block" data-lang="python">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">python</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span></div>
+    <pre class="code-scroll"><code class="language-python"><span class="line">n_train <span class="token operator">=</span> train<span class="token punctuation">.</span>shape<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span></span><span class="line">train_features <span class="token operator">=</span> torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span>all_features<span class="token punctuation">[</span><span class="token punctuation">:</span>n_train<span class="token punctuation">]</span><span class="token punctuation">.</span>values<span class="token punctuation">.</span>astype<span class="token punctuation">(</span>numpy<span class="token punctuation">.</span>float32<span class="token punctuation">)</span><span class="token punctuation">,</span> dtype<span class="token operator">=</span>torch<span class="token punctuation">.</span>float32<span class="token punctuation">)</span></span><span class="line">test_features <span class="token operator">=</span> torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span>all_features<span class="token punctuation">[</span>n_train<span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">.</span>values<span class="token punctuation">.</span>astype<span class="token punctuation">(</span>numpy<span class="token punctuation">.</span>float32<span class="token punctuation">)</span><span class="token punctuation">,</span> dtype<span class="token operator">=</span>torch<span class="token punctuation">.</span>float32<span class="token punctuation">)</span></span></code></pre>
+  </div>
+</figure>
+  </div>
+</article>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <p>Powered by <strong>Quill</strong></p>
+  </div>
+</footer>
+<script src="/main.js" defer></script>
+</body>
+</html>

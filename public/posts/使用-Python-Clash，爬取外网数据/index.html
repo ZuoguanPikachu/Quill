@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>使用 Python + Clash，爬取外网数据 · 坐观の小站</title>
+<link rel="icon" href="https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/assets/cat.jpg">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/prism.css">
+
+</head>
+<body>
+<header class="site-header">
+  <div class="container site-nav">
+    <a class="site-title" href="/">坐观の小站</a>
+    
+    <button type="button" class="nav-toggle" data-nav-toggle aria-controls="site-menu" aria-expanded="false" aria-label="打开菜单">
+      <svg class="icon-burger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <nav class="site-menu" id="site-menu" aria-label="主菜单"><a class="nav-link" href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>首页</span></a><a class="nav-link" href="/archives/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg><span>归档</span></a><a class="nav-link" href="/categories/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>分类</span></a><a class="nav-link" href="/tags/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span>标签</span></a><a class="nav-link" href="/friends/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>友链</span></a></nav>
+  </div>
+</header>
+<section class="hero">
+  <div class="hero-cover" style="background-image:linear-gradient(rgba(0,0,0,0.12),rgba(0,0,0,0.35)),url(&quot;https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/assets/2.jpg?imageMogr2/thumbnail/1600x900&gt;&quot;)"></div>
+  <div class="hero-inner container">
+    <h1 class="hero-title">使用 Python + Clash，爬取外网数据</h1>
+    
+  </div>
+</section>
+
+<main class="container">
+
+<article class="post page">
+  <header class="post-header">
+    
+    <div class="post-meta">
+      <time datetime="2023-02-24">2023-02-24</time>
+      <span class="sep">·</span> <a class="cat" href="/categories/%E7%BC%96%E7%A8%8B/">编程</a>
+    </div>
+    <div class="post-tags"><a class="tag" href="/tags/%E7%88%AC%E8%99%AB/">爬虫</a><a class="tag" href="/tags/%E4%BB%A3%E7%90%86/">代理</a><a class="tag" href="/tags/Python/">Python</a></div>
+  </header>
+  <div class="post-content">
+<p>有的时候，希望能够爬取一些外网的数据，但是开启<code>Clash</code>之类的软件后，发现会直接报<code>requests.exceptions.ProxyError</code>的错误。解决方法的代码如下：</p>
+<figure class="code-block" data-lang="python">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">python</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span><span class="line-no">4</span><span class="line-no">5</span><span class="line-no">6</span><span class="line-no">7</span><span class="line-no">8</span><span class="line-no">9</span><span class="line-no">10</span><span class="line-no">11</span><span class="line-no">12</span><span class="line-no">13</span><span class="line-no">14</span><span class="line-no">15</span><span class="line-no">16</span></div>
+    <pre class="code-scroll"><code class="language-python"><span class="line"><span class="token keyword">import</span> requests</span><span class="line"><span class="token keyword">import</span> urllib3</span><span class="line"> </span><span class="line"> </span><span class="line"><span class="token comment"># 设置了verify=False后(在后面)会有警告，关闭警告</span></span><span class="line">urllib3<span class="token punctuation">.</span>disable_warnings<span class="token punctuation">(</span><span class="token punctuation">)</span></span><span class="line"> </span><span class="line">url <span class="token operator">=</span> <span class="token string">"https://www.google.com"</span></span><span class="line"> </span><span class="line"><span class="token comment"># Clash默认的代理端口为7890</span></span><span class="line">proxies <span class="token operator">=</span> <span class="token punctuation">{</span></span><span class="line">    <span class="token string">'http'</span><span class="token punctuation">:</span> <span class="token string">'http://127.0.0.1:7890/'</span><span class="token punctuation">,</span></span><span class="line">    <span class="token string">'https'</span><span class="token punctuation">:</span> <span class="token string">'http://127.0.0.1:7890/'</span></span><span class="line"><span class="token punctuation">}</span></span><span class="line"> </span><span class="line">response <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token operator">=</span>url<span class="token punctuation">,</span> verify<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span> proxies<span class="token operator">=</span>proxies<span class="token punctuation">)</span></span></code></pre>
+  </div>
+</figure><p>将代理的IP地址以及端口号写死的做法并不优雅，可以使用<code>urllib.request</code>中的<code>getproxies</code>获取系统Web代理信息。当未开启代理时，返回空字典，开启代理时，返回如下的字典：</p>
+<figure class="code-block" data-lang="json">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">json</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span><span class="line-no">4</span><span class="line-no">5</span></div>
+    <pre class="code-scroll"><code class="language-json"><span class="line"><span class="token punctuation">{</span></span><span class="line">    'http'<span class="token operator">:</span> 'http<span class="token operator">:</span><span class="token comment">//127.0.0.1:7890',</span></span><span class="line"> 	'https'<span class="token operator">:</span> 'https<span class="token operator">:</span><span class="token comment">//127.0.0.1:7890',</span></span><span class="line"> 	'ftp'<span class="token operator">:</span> 'ftp<span class="token operator">:</span><span class="token comment">//127.0.0.1:7890'</span></span><span class="line"><span class="token punctuation">}</span></span></code></pre>
+  </div>
+</figure><p><code>urllib3.disable_warnings()</code>这样的代码也不够优雅。使用<code>httpx</code>则不用设置<code>urllib3.disable_warnings()</code>、<code>verify=False</code>。</p>
+<figure class="code-block" data-lang="python">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">python</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span><span class="line-no">4</span><span class="line-no">5</span><span class="line-no">6</span><span class="line-no">7</span><span class="line-no">8</span></div>
+    <pre class="code-scroll"><code class="language-python"><span class="line"><span class="token keyword">from</span> urllib<span class="token punctuation">.</span>request <span class="token keyword">import</span> getproxies</span><span class="line"><span class="token keyword">import</span> httpx</span><span class="line"> </span><span class="line"> </span><span class="line">response <span class="token operator">=</span> httpx<span class="token punctuation">.</span>get<span class="token punctuation">(</span></span><span class="line">	<span class="token string">"https://www.google.com/"</span><span class="token punctuation">,</span></span><span class="line">    proxy<span class="token operator">=</span>getproxies<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"http"</span><span class="token punctuation">)</span></span><span class="line"><span class="token punctuation">)</span></span></code></pre>
+  </div>
+</figure><p>也可以使用<code>Client</code>，和<code>requests</code>的<code>session</code>基本一致</p>
+<figure class="code-block" data-lang="python">
+  <figcaption class="code-header">
+    <span class="code-dots"><i class="code-dot red"></i><i class="code-dot yellow"></i><i class="code-dot green"></i></span>
+    <span class="code-lang">python</span>
+    <button type="button" class="code-copy" data-code-copy>复制</button>
+  </figcaption>
+  <div class="code-body">
+    <div class="code-gutter" aria-hidden="true"><span class="line-no">1</span><span class="line-no">2</span><span class="line-no">3</span><span class="line-no">4</span><span class="line-no">5</span><span class="line-no">6</span><span class="line-no">7</span><span class="line-no">8</span><span class="line-no">9</span></div>
+    <pre class="code-scroll"><code class="language-python"><span class="line"><span class="token keyword">from</span> urllib<span class="token punctuation">.</span>request <span class="token keyword">import</span> getproxies</span><span class="line"><span class="token keyword">import</span> httpx</span><span class="line"> </span><span class="line"> </span><span class="line">client <span class="token operator">=</span> httpx<span class="token punctuation">.</span>Client<span class="token punctuation">(</span></span><span class="line">    proxy<span class="token operator">=</span>getproxies<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"http"</span><span class="token punctuation">)</span></span><span class="line"><span class="token punctuation">)</span></span><span class="line"> </span><span class="line">response <span class="token operator">=</span> client<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"https://www.google.com/"</span><span class="token punctuation">)</span></span></code></pre>
+  </div>
+</figure>
+  </div>
+</article>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <p>Powered by <strong>Quill</strong></p>
+  </div>
+</footer>
+<script src="/main.js" defer></script>
+</body>
+</html>
