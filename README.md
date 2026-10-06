@@ -10,7 +10,7 @@ source/posts/<文章目录>/
     assets/            # 可选：正文引用的本地图片等，原样复制到输出
 source/_data/
     friends.yml        # 友链数据（可选），生成 /friends/ 页面
-    site.yml           # 站点配置：标题 / 副标题 / 图标 / banner
+    site.yml           # 站点配置：标题 / 副标题 / 图标 / banner / GitHub
 public/                # 构建产物（自动生成）
 scripts/
     build.js           # 构建脚本：数据扫描 + 编排，页面渲染在 templates/
@@ -73,10 +73,12 @@ title: Quill                       # 站点标题（必填）
 subtitle: 一个用 Markdown 写的极简博客  # 副标题（可选，留空则不显示）
 favicon: /favicon.ico             # 站点图标（可选，填写后 <head> 输出 <link rel="icon">）
 banner: https://.../banner.jpg    # 站点 Hero 横幅背景图（可选）
+github: https://github.com/you    # GitHub 主页地址（可选，填写后导航栏末尾显示图标链接）
 ```
 
 - `subtitle` 展示在导航栏与首页横幅中
 - `banner` 填图后各页导航栏下方显示大图横幅（桌面端为整页固定背景 + 视差，移动端为随页面滚动并带视差的横幅）；文章页横幅自动用文章自己的 `index_img`；留空则所有页面不显示横幅
+- `github` 填写后在导航栏末尾追加一个 GitHub 图标链接（新标签页打开），移动端同样出现在汉堡菜单中；留空则不显示
 
 ## 友链格式（source/_data/friends.yml）
 

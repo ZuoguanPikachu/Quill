@@ -59,6 +59,12 @@ body {
 .nav-link { display: inline-flex; align-items: center; gap: 5px; color: var(--fg); text-decoration: none; font-size: 0.95rem; white-space: nowrap; }
 .nav-link svg { width: 1em; height: 1em; flex-shrink: 0; }
 .nav-link:hover { color: var(--accent); }
+/* 窄屏降级（汉堡菜单切换点 560px 之上、顶栏尚不宽裕的区间）：
+   实测 6 项导航带文字需 ≥581px 才不溢出，故 620px 以下 GitHub 链接只留图标
+   （隐藏的是 <span>，可访问名由 aria-label 提供） */
+@media (min-width: 561px) and (max-width: 620px) {
+  .nav-link-github span { display: none; }
+}
 /* 移动端汉堡按钮：桌面隐藏；展开时图标由三横线切换为 X */
 .nav-toggle {
   display: none;

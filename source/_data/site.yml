@@ -3,7 +3,9 @@
 # subtitle 站点副标题（可选，留空或不写都不显示）
 # favicon  站点图标（可选，填写 URL 后在 <head> 输出 <link rel="icon">，如 /favicon.ico 或 https://...）
 # banner   全站页面 Hero Banner 背景图（可选，填写 URL 后首页/归档/分类/标签/友链显示大图横幅；文章页自动用文章自己的 index_img，留空则这些页面不显示横幅）
+# github   GitHub 主页地址（可选，填写后在导航栏末尾显示 GitHub 图标链接，新标签页打开；留空则不显示）
 title: 坐观の小站
 subtitle: 
 favicon: https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/assets/cat.jpg
 banner: https://zuoguan-piclib-1257172707.cos.ap-guangzhou.myqcloud.com/assets/81bb1f19351284a6b45e947cdb350018.png
+github: https://github.com/ZuoguanPikachu
